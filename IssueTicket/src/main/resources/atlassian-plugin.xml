@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+  <plugin-info>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+    <param name="plugin-icon">images/pluginIcon.png</param>
+    <param name="plugin-logo">images/pluginLogo.png</param>
+  </plugin-info>
+  <!-- add our i18n resource -->
+  <resource type="i18n" name="i18n" location="IssueTicket"/>
+  <!-- <resource type="i18n" name="i18n" location="com.googlecode.jsu.i18n"/> -->
+  
+  <!-- add our web resources -->
+  <web-resource key="IssueTicket-resources" name="IssueTicket Web Resources">
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <resource type="download" name="IssueTicket.css" location="/css/IssueTicket.css"/>
+    <resource type="download" name="IssueTicket.js" location="/js/IssueTicket.js"/>
+    <resource type="download" name="images/" location="/images"/>
+    <context>IssueTicket</context>
+  </web-resource>
+  <!-- publish our component -->
+  <component key="myPluginComponent" class="com.issue.ticket.MyPluginComponentImpl" public="true">
+    <interface>com.issue.ticket.MyPluginComponent</interface>
+  </component>
+  <!-- import from the product container -->
+  <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
+  <servlet name="Issue CRUD" i18n-name-key="issue-crud.name" key="issue-crud" class="com.example.plugins.tutorial.crud.servlet.IssueCRUD">
+    <description key="issue-crud.description">The Issue CRUD Plugin</description>
+    <url-pattern>/issuecrud</url-pattern>
+  </servlet>
+  <component-import key="templateRenderer" interface="com.atlassian.templaterenderer.TemplateRenderer" filter=""/>
+  <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager" filter=""/>
+  <web-item name="EdifixioRapport" i18n-name-key="edifixio-rapport.name" key="edifixio-rapport" section="system.top.navigation.bar" weight="1000">
+    <description key="edifixio-rapport.description">The EdifixioRapport Plugin</description>
+    <label key="edifixio-rapport.label"/>
+    <link linkId="edifixio-rapport-link">www.google.fr</link>
+  </web-item>
+  <web-section name="Issues" i18n-name-key="issues.name" key="issues" location="edifixio-rapport-link" weight="1000">
+    <description key="issues.description">The Issues Plugin</description>
+    <label key="issues.label"/>
+  </web-section>
+  <web-item name="Tickets" i18n-name-key="tickets.name" key="tickets" section="edifixio-rapport-link/issues" weight="1000">
+    <description key="tickets.description">The Tickets Plugin</description>
+    <label key="tickets.label"></label>
+    <link linkId="tickets-link">http://jira6.edifixio-online.com/plugins/servlet/issuecrud</link>
+  </web-item>
+   <!-- Issue Panels -->
+  <issue-tabpanel key="transitions-summary-tabpanel" i18n-name-key="issue-tabpanel.transitions-summary-tabpanel.name" class="com.googlecode.jsu.transitionssummary.issuetabpanel.TransitionsSummaryTabPanel">
+    <description key="issue-tabpanel.transitions-summary-tabpanel.description"/>
+    <label key="transitions-summary-view.name"/>
+    <resource type="velocity" name="view" location="templates/jira/issuetabpanel/transitionssummary/transitions-summary-view.vm"/>
+    <supports-ajax-load>true</supports-ajax-load>
+  </issue-tabpanel>
+  <!-- Components -->
+  
+  <component key="transitionsManager" class="com.googlecode.jsu.transitionssummary.TransitionsManager" interface="com.googlecode.jsu.transitionssummary.TransitionsManager" public="true" i18n-name-key="component.transitionsmanager.name">
+    <description key="component.transitionsmanager.description">Generate statistics information about transitions.</description>
+  </component>
+</atlassian-plugin>

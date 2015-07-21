@@ -1,0 +1,97 @@
+{namespace JIRA.Templates.Setup.ProductBundle}
+
+/**
+ * The setup page for choosing additional product bundle (plugin) to be install along with JIRA
+ *
+ * @param? defaultChoice the value for choice widget option which should be selected by default
+ * @param modifierKey
+ * @param productName The name of the current JIRA product
+ */
+{template .page}
+    {call JIRA.Templates.Setup.layout data="all"}
+        {param bodyClasses: 'jira-setup-product-bundle-page' /}
+        {param content}
+            {call .pageContent data="all" /}
+        {/param}
+    {/call}
+{/template}
+
+/**
+ * The content of SetupProductBundle page
+ *
+ * @param? defaultChoice
+ * @param modifierKey
+ */
+{template .pageContent}
+    {let $formId: 'jira-setup-product-bundle' /}
+    {let $idPrefix: $formId + '-' /}
+
+    {call aui.form.form}
+        {param action: 'SetupProductBundle.jspa' /}
+        {param extraClasses: 'ajs-dirty-warning-exempt jira-setup-form' /}
+        {param id: $formId /}
+        {param content}
+            <h2>
+                {getText('setup.bundle.title')}
+            </h2>
+
+            {let $imageJIRA}
+                <img src="{contextPath()}/images/setup/logos/logo-jira.png"
+                    {sp}width="110" height="50" class="jira-setup-product-bundle-logo" />
+            {/let}
+
+            {let $imageAgile}
+                <img src="{contextPath()}/images/setup/logos/logo-jira.png"
+                    {sp}width="110" height="50" class="jira-setup-product-bundle-logo" />
+                <span class="jira-setup-product-bundle-logo">+</span>
+                <img src="{contextPath()}/images/setup/logos/logo-jira-agile.png"
+                    {sp}width="210" height="50" class="jira-setup-product-bundle-logo" />
+            {/let}
+
+            {let $imageSD}
+                <img src="{contextPath()}/images/setup/logos/logo-jira.png"
+                    {sp}width="110" height="50" class="jira-setup-product-bundle-logo" />
+                <span class="jira-setup-product-bundle-logo">+</span>
+                <img src="{contextPath()}/images/setup/logos/logo-jira-service-desk.png"
+                    {sp}width="166" height="50" class="jira-setup-product-bundle-logo" />
+            {/let}
+
+            {call JIRA.Templates.Setup.choiceWidget}
+                {param default: $defaultChoice /}
+                {param name: 'selectedBundle' /}
+                {param options: [[
+                    'descriptionContent': getText('setup.bundle.tracking.content.new'),
+                    'headerContent': getText('setup.bundle.tracking.label.new'),
+                    'rightContent': $imageJIRA,
+                    'value': 'TRACKING'
+                ], [
+                    'descriptionContent': getText('setup.bundle.development.content.new'),
+                    'headerContent': getText('setup.bundle.development.label.new'),
+                    'rightContent': $imageAgile,
+                    'value': 'DEVELOPMENT'
+                ], [
+                    'descriptionContent': getText('setup.bundle.servicedesk.content.new'),
+                    'headerContent': getText('setup.bundle.servicedesk.label.new'),
+                    'rightContent': $imageSD,
+                    'value': 'SERVICEDESK'
+            ]] /}
+            {/call}
+
+            {call aui.form.buttons}
+                {param extraClasses: 'jira-setup-form-with-no-fields' /}
+                {param content}
+                    {call aui.form.submit}
+                        {param extraClasses: 'jira-setup-form-submit' /}
+                        {param id: $idPrefix + 'submit' /}
+                        {param text: getText('common.words.next') /}
+                        {param type: 'primary' /}
+                        {param extraAttributes: [
+                            'accesskey': getText('AUI.form.submit.button.accesskey'),
+                            'title': getText('AUI.form.submit.button.tooltip', getText('AUI.form.submit.button.accesskey'), $modifierKey)
+                        ] /}
+                    {/call}
+                {/param}
+            {/call}
+        {/param}
+    {/call}
+{/template}

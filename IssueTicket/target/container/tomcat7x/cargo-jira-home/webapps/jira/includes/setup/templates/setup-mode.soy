@@ -1,0 +1,85 @@
+{namespace JIRA.Templates.Setup.Mode}
+
+/**
+ * The setup page for choosing setup mode (instant or advanced)
+ *
+ * @param modifierKey
+ * @param productName The name of the current JIRA product
+ * @param? selectedMode The mode which will be selected by default (if already chosen)
+ */
+{template .page}
+    {call JIRA.Templates.Setup.layout data="all"}
+        {param bodyClasses: 'jira-setup-mode-page' /}
+        {param content}
+            {call .pageContent data="all" /}
+        {/param}
+    {/call}
+{/template}
+
+/**
+ * The content of SetupMode page
+ *
+ * @param modifierKey
+ * @param productName
+ * @param? selectedMode
+ */
+{template .pageContent}
+    {let $formId: 'jira-setup-mode' /}
+    {let $idPrefix: $formId + '-' /}
+    {let $productNameHtml}{$productName}{/let}
+
+    {call aui.form.form}
+        {param action: 'SetupMode.jspa' /}
+        {param extraClasses: 'ajs-dirty-warning-exempt jira-setup-form' /}
+        {param id: $formId /}
+        {param content}
+            <h2>
+                {getText('setup.mode.title.with.setup', $productName)}
+                {call JIRA.Templates.Setup.languageDialogTrigger data="all" /}
+            </h2>
+            <p class="jira-setup-mode-description">{getText('setup.mode.description', $productName)}</p>
+
+            {let $imageInstant}
+                <img src="{contextPath()}/images/setup/setup-mode-instant.png"
+                    {sp}width="102" height="100" class="jira-setup-mode-image">
+            {/let}
+
+            {let $imageAdvanced}
+                <img src="{contextPath()}/images/setup/setup-mode-advanced.png"
+                    {sp}width="102" height="100" class="jira-setup-mode-image">
+            {/let}
+
+            {call JIRA.Templates.Setup.choiceWidget}
+                {param default: $selectedMode /}
+                {param name: 'setupOption' /}
+                {param options: [[
+                    'descriptionContent': getText('setup.mode.instant.description', $productNameHtml, '<strong>', '</strong>'),
+                    'headerContent': getText('setup.mode.instant.header'),
+                    'leftContent': $imageInstant,
+                    'value': 'instant'
+                ], [
+                    'descriptionContent': getText('setup.mode.classic.description', $productNameHtml),
+                    'headerContent': getText('setup.mode.classic.header'),
+                    'leftContent': $imageAdvanced,
+                    'value': 'classic'
+                ]] /}
+            {/call}
+
+            {call aui.form.buttons}
+                {param extraClasses: 'jira-setup-form-with-no-fields' /}
+                {param content}
+                    {call aui.form.submit}
+                        {param extraClasses: 'jira-setup-form-submit' /}
+                        {param id: $idPrefix + 'submit' /}
+                        {param text: getText('common.words.next') /}
+                        {param type: 'primary' /}
+                        {param extraAttributes: [
+                            'accesskey': getText('AUI.form.submit.button.accesskey'),
+                            'title': getText('AUI.form.submit.button.tooltip', getText('AUI.form.submit.button.accesskey'), $modifierKey)
+                        ] /}
+                    {/call}
+                {/param}
+            {/call}
+        {/param}
+    {/call}
+{/template}

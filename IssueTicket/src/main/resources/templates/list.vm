@@ -1,0 +1,88 @@
+
+<html>
+<head>
+    <title>All Rapport Issues </title>
+    <meta name="decorator" content="atl.general">
+    
+</head>
+<body class="page-type-admin">
+<div class="content-container">
+
+    <div class="content-body">
+      
+        #if ($errors.size()>0)
+            <div class="aui-message error shadowed">
+                #foreach($error in $errors)
+                    <p class="title">
+                        <span class="aui-icon icon-error"></span>
+                        <strong>$error</strong>
+                    </p>
+                #end
+            </div>
+            <!-- .aui-message -->
+        #end
+
+        #if ($issues.size() > 0)
+            <div class="issues">
+                <table class="aui">
+                    <thead>
+                    <tr>
+                        <th>Identifiant</th>
+                        <th>Criticité</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Assignee</th>
+                        <th>Auteur</th>
+                        <th>Statut</th>
+                        <th>Date ouverture</th>   
+                                 
+                       
+                    </tr>
+                    </thead>
+                    <tbody>
+                        #foreach( $issue in $issues )
+                        <tr>
+                            <td>$issue.getId()</td>
+                            <td>$issue.getPriorityObject().getName()</td>
+                           <td> $issue.getIssueTypeObject().getName()</td>
+                            <td>
+                                #if($issue.getDescription())
+                            $issue.getDescription()
+                        #end
+                            </td>
+                            <td>
+                                $issue.getAssignee().getName()
+                            </td>
+                            <td>
+                                $issue.getReporter().getName()
+                            </td>
+                            <td>
+                                $issue.getStatusObject().getName()
+                            </td>
+                             <td>
+                                $issue.getCreated()
+                            </td> 
+                           <!--     #foreach ($tran in $transitions)
+                             #if ($tran.getId() == $issue.getId())
+                             <td>
+                               OK
+                            </td> 
+                            #end
+                            #end-->
+                        </tr>
+                        #end
+                    </tbody>
+                </table>
+            </div>
+        #end
+       
+
+    </div>
+    
+   <!-- kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk-->
+   
+  
+    
+</div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+
+   
+   #disable_html_escaping()
+#macro(statusWithIcon $status)
+#set ($iconurl = $status.getIconUrl())
+
+<td width=7% valign=center>
+	#if ($iconurl.startsWith('http://') || $iconurl.startsWith('https://'))
+		<img src="$iconurl" height="16" width="16" alt='$textutils.htmlEncode($status.getNameTranslation())' title="$textutils.htmlEncode($status.getNameTranslation()) - $textutils.htmlEncode($!status.getDescTranslation())" />
+	#else
+		<img src="${req.getContextPath()}${iconurl}" height="16" width="16" alt="$textutils.htmlEncode($status.getNameTranslation())" title="$textutils.htmlEncode($status.getNameTranslation()) - $textutils.htmlEncode($!status.getDescTranslation())" />
+	#end
+</td>
+<td width=40% valign=top>
+	$textutils.htmlEncode(${status.nameTranslation})
+</td>
+#end
+
+#macro(headerCell $caption $width)
+<th bgcolor="#f0f0f0" width="$width">$i18n.getText($caption)</th>
+#end
+
+<table width="100%" cellpadding="2">
+    <tr>
+    	#headerCell("transitions-summary-view.transition" "34%")
+        #headerCell("time to transition" "10%")
+    	#headerCell("transitions-summary-view.timespent" "5%")
+    	#headerCell("transitions-summary-view.occurence_nb" "5%")
+    	#headerCell("transitions-summary-view.last_executer" "18%")
+    	#headerCell("transitions-summary-view.last_occurence_date" "18%")
+    </tr>
+
+    #foreach ($tran in ${action.getTransitions()})
+	    <tr>
+			<td bgcolor="#ffffff" width=34% valign=top>
+		    	<table width="100%">
+		        	<tr>
+	            		#statusWithIcon ($tran.fromStatus)
+		                <td align="center" nowrap="nowrap" width=6% valign=top>
+		                	<img src="${req.getContextPath()}/images/icons/arrow_right_small.gif" align="absmiddle" border="0" height="16" width="16" />
+		                </td>
+	            		#statusWithIcon ($tran.toStatus)
+		            </tr>
+				</table>
+            </td>
+            <td width=10% valign=top align=left>
+              ${tran.lastUpdater}
+		    </td>
+			<td width=5% valign=top align=left>
+                $textutils.htmlEncode(${tran.durationAsString})
+		    </td>
+			<td width=5% valign=top align=center>
+            	${tran.timesToTransition}
+		    </td>
+			<td width=18% valign=top>
+				#if (${action.isUserExists(${tran.lastUpdater})})
+                    #authorlinkname(${tran.lastUpdater})
+				#else
+                    $textutils.htmlEncode(${tran.lastUpdater})
+				#end
+	        </td>
+			<td width=18% valign=top align=right>
+                $textutils.htmlEncode(${tran.lastUpdateAsString})
+        	</td>
+		</tr>
+	#end
+</table>
+   
