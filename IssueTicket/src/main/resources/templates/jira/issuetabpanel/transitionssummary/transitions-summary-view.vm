@@ -1,6 +1,4 @@
-
-   
-   #disable_html_escaping()
+#disable_html_escaping()
 #macro(statusWithIcon $status)
 #set ($iconurl = $status.getIconUrl())
 
@@ -23,7 +21,7 @@
 <table width="100%" cellpadding="2">
     <tr>
     	#headerCell("transitions-summary-view.transition" "34%")
-        #headerCell("time to transition" "10%")
+        #headerCell("Time to transition" "10%")
     	#headerCell("transitions-summary-view.timespent" "5%")
     	#headerCell("transitions-summary-view.occurence_nb" "5%")
     	#headerCell("transitions-summary-view.last_executer" "18%")

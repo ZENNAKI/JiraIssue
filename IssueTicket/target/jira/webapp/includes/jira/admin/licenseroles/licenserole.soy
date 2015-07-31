@@ -1,0 +1,106 @@
+{namespace JIRA.Templates.Admin.LicenseRoles}
+
+/**
+ */
+{template .loading}
+<span class="license-role-load icon loading"></span>
+{/template}
+
+/**
+ */
+{template .roleEditorEmpty}
+<div id="license-role-initial-load" class="icon loading"></div>
+{/template}
+
+/**
+ */
+{template .roleEditorTableEmpty}
+<td class="license-role-empty" colspan="3">{getText('licenserole.configuration.no.groups')}</td>
+{/template}
+
+/**
+ */
+{template .noRoles}
+{call aui.message.info}
+    {param id: 'license-role-none' /}
+    {param closeable : false /}
+    {param content}
+        {getText('licenserole.configuration.no.roles')}
+    {/param}
+{/call}
+{/template}
+
+/**
+ * @param id
+ */
+{template .roleEditor}
+<form data-role="{$id}" class="aui license-role-editor-form" action="#" class="ajs-dirty-warning-exempt">
+    <div class="license-role-editor-container"></div>
+    <div class="license-role-selector-container"></div>
+</form>
+{/template}
+
+/**
+ * @param id
+ */
+{template .groupSingleSelect}
+<select class="ss-group-picker" name="groupname-{$id}" multiple="multiple">
+    <option data-placeholder="true">{getText('licenserole.configuration.select.group')}&hellip;</option>
+</select>
+<div class="description">{getText('licenserole.configuration.select.group.to.add')}</div>
+{/template}
+
+/**
+ * @param name the name of the role.
+ */
+{template .roleEditorTable}
+<h2>{$name}</h2>
+<table class="aui license-role-editor-table">
+    <thead>
+        <th class="license-role-name-col">{getText('licenserole.configuration.column.name')}</th>
+        <th class="license-role-primary-col">{getText('licenserole.configuration.column.primary')}</th>
+        <th class="license-role-actions-col">{getText('licenserole.configuration.column.actions')}</th>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+{/template}
+
+/**
+ * @param name the name of the group.
+ * @param primary true if the group is the primary.
+ */
+{template .roleEditorRow}
+<td class="license-role-name">{$name}</td>
+<td class="license-role-primary"><input name="primary" class="license-role-primary-input" type="radio"{if $primary} checked="checked"{/if}></td>
+<td class="license-role-action">
+{if $primary}
+    <span class="license-role-remove" title="{getText('licenserole.configuration.cant.remove.primary')}">{getText('licenserole.configuration.action.remove')}</span>
+{else}
+    <a class="license-role-remove" href="#">{getText('licenserole.configuration.action.remove')}</a>
+{/if}
+</td>
+{/template}
+
+/**
+ * Render the license role page.
+ */
+{template .page}
+    <html>
+    <head>
+        <title>{getText('licenserole.configuration.title')}</title>
+        <meta name="admin.active.tab" content="license_role_browser"/>
+    </head>
+    <body>
+        {call JIRA.Templates.Headers.pageHeader}
+            {param mainContent}<h1>{getText('licenserole.configuration.title')}</h1>{/param}
+        {/call}
+        <p>{getText('licenserole.configuration.info.1')}</p>
+        <p>{getText('licenserole.configuration.info.2')}</p>
+        {call JIRA.Templates.Modules.staticModule}
+            {param id: 'licenseroles'/}
+            {param content}<div id="license-roles"></div>{/param}
+        {/call}
+    </body>
+    </html>
+{/template}

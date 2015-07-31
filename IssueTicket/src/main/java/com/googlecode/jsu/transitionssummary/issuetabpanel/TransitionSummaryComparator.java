@@ -9,7 +9,7 @@ import com.googlecode.jsu.transitionssummary.TransitionSummary;
  * Comparator for comparing trasition summary by last update timestamp.
  * @author <A href="mailto:abashev at gmail dot com">Alexey Abashev</A>
  */
-final class TransitionSummaryComparator implements Comparator<TransitionSummary> {
+public final class TransitionSummaryComparator implements Comparator<TransitionSummary> {
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */

@@ -1,0 +1,702 @@
+{namespace JIRA.Templates.Setup.Account}
+
+/**
+ * The setup page for logging in / registering new MAC account and retrieving evaluation licenses
+ *
+ * @param errorTextsJson the translated texts that will be used by views to display errors
+ * @param productName The name of the current JIRA product
+ * @param selectedBundle
+ * @param selectedBundleName
+ */
+{template .page}
+    {let $formId: 'jira-setup-account' /}
+    {let $idPrefix: $formId + '-' /}
+
+    {call JIRA.Templates.Setup.layout data="all"}
+        {param bodyClasses: 'jira-setup-account-page' /}
+        {param content}
+            {call aui.form.form}
+                {param action: 'SetupFinishing.jspa' /}
+                {param extraClasses: 'ajs-dirty-warning-exempt jira-setup-form jira-setup-account-form' /}
+                {param id: $formId /}
+                {param content}
+                    <h2>{getText('setup.account.title')}</h2>
+                    <p class="jira-setup-account-description">
+                        {getText('setup.account.description')}
+                    </p>
+
+                    <div class="jira-setup-account-contents" data-error-texts="{$errorTextsJson}">
+                        {call .basicForm data="all" /}
+                    </div>
+
+                    <div class="jira-setup-account-annotations">
+                        <p class="jira-setup-account-annotations-paragraph jira-setup-account-annotations-summary hidden">
+                            {getText('setup.account.annotation.summary')}
+                        </p>
+                        <p class="jira-setup-account-annotations-paragraph">
+                            {getText('setup.account.annotation')}
+                        </p>
+                        <p class="jira-setup-account-annotations-paragraph jira-setup-account-annotations-licenses">
+                            {let $link}<a target="_blank" href="http://my.atlassian.com">{/let}
+                            {getText('setup.account.annotation.licenses', $link, '</a>')|noAutoescape}
+                        </p>
+                    </div>
+
+                    {call aui.form.input}
+                        {param id: 'jira-setup-account-email-hidden' /}
+                        {param name: 'email' /}
+                        {param type: 'hidden' /}
+                    {/call}
+
+                    {call aui.form.input}
+                        {param id: 'jira-setup-account-password-hidden' /}
+                        {param name: 'password' /}
+                        {param type: 'hidden' /}
+                    {/call}
+
+                    {call aui.form.input}
+                        {param id: 'jira-setup-account-license-hidden' /}
+                        {param name: 'jiraLicense' /}
+                        {param type: 'hidden' /}
+                    {/call}
+
+                    {call aui.form.input}
+                        {param id: 'jira-setup-account-bundle-license-hidden' /}
+                        {param name: 'bundleLicense' /}
+                        {param type: 'hidden' /}
+                    {/call}
+
+                    {call aui.form.buttons}
+                        {param extraClasses: 'jira-setup-account-buttons hidden jira-setup-form-with-no-fields' /}
+                        {param content}
+                            <span class="jira-setup-account-spinner jira-setup-account-spinner-generating2 hidden">
+                                <span class="aui-icon aui-icon-wait"></span>{sp}
+                                {getText('setup.account.generating.license')}
+                            </span>
+                            {call aui.form.button}
+                                {param extraClasses: 'jira-setup-account-button-skip' /}
+                                {param id: 'jira-setup-account-button-skip' /}
+                                {param text: getText('setup.account.skip') /}
+                            {/call}
+                            {call aui.form.button}
+                                {param extraClasses: 'aui-button-primary' /}
+                                {param id: 'jira-setup-account-button-retry' /}
+                                {param text: getText('setup.account.retry') /}
+                            {/call}
+                            {call aui.form.button}
+                                {param extraClasses: 'aui-button-primary' /}
+                                {param id: 'jira-setup-account-button-submit' /}
+                                {param text: getText('common.forms.next') /}
+                            {/call}
+                        {/param}
+                    {/call}
+                {/param}
+            {/call}
+        {/param}
+    {/call}
+{/template}
+
+/**
+ * The content of the first form shown to user, containing just email field
+ *
+ * @param? checkAccountWarning whether show warning regarding checking MAC account existence
+ * @param? checkAccountWarningError whether error message should be used instead of warning
+ * @param? errors the form fields errors
+ * @param? values the form fields values
+ */
+{template .basicForm}
+    <div class="jira-setup-account-form-basic">
+        <p class="jira-setup-account-form-header">
+            {getText('setup.account.basic.form.header')}
+        </p>
+
+        {if $checkAccountWarning}
+            {call .cannotCheckAccountWarning}
+                {param isError: $checkAccountWarningError /}
+            {/call}
+        {/if}
+
+        {call .emailField data="all" /}
+        {call .formBottom}
+            {param buttonText: getText('common.forms.next') /}
+        {/call}
+    </div>
+{/template}
+
+/**
+ * The content of the login form, in case email provided belongs to a MAC account
+ *
+ * @param? agreementChecked whether the agreement input should be checked by default
+ * @param? errors the form fields errors
+ * @param? loginWarning whether show warning regarding problems with login
+ * @param? loginWarningError whether error message should be used instead of warning
+ * @param? recheckAccountWarning whether show warning regarding checking MAC account existence
+ * @param? recheckAccountWarningError whether error message should be used instead of warning
+ * @param? values the form fields values
+ */
+{template .loginForm}
+    <div class="jira-setup-account-form-login">
+        <p class="jira-setup-account-form-header">
+            {getText('setup.account.login.form.header')}
+        </p>
+
+        {if $loginWarning}
+            {call .cannotLoginWarning}
+                {param isError: $loginWarningError /}
+            {/call}
+        {/if}
+
+        {call .commonWarnings data="all" /}
+        {call .emailField data="all" /}
+        {call .passwordField data="all" /}
+        {call .agreementField data="all" /}
+
+        {call .formBottom}
+            {param buttonText: getText('common.concepts.login') /}
+            {param content}
+                <span class="jira-setup-account-spinner jira-setup-account-spinner-logging hidden">
+                    <span class="aui-icon aui-icon-wait"></span>{sp}
+                    {getText('setup.account.logging.in')}
+                </span>
+                <a href="https://id.atlassian.com/login/resetpassword" target="_blank" class="jira-setup-account-forgot-password-link">
+                    {getText('setup.loginmac.forgotpassword')}
+                </a>
+            {/param}
+        {/call}
+    </div>
+{/template}
+
+/**
+ * The content of the new MAC account registration form
+ *
+ * @param? agreementChecked whether the agreement input should be checked by default
+ * @param? createAccountWarning whether show warning regarding account creation
+ * @param? createAccountWarningError whether error message should be used instead of warning
+ * @param? errors the form fields errors
+ * @param? recheckAccountWarning whether show warning regarding checking MAC account existence
+ * @param? recheckAccountWarningError whether error message should be used instead of warning
+ * @param? values the form fields values
+ */
+{template .registrationForm}
+    <div class="jira-setup-account-form-registration">
+        <p class="jira-setup-account-form-header">
+            {getText('setup.account.registration.form.header')}
+        </p>
+
+        {if $createAccountWarning}
+            {call .cannotCreateAccountWarning}
+                {param isError: $createAccountWarningError /}
+            {/call}
+        {/if}
+
+        {call .commonWarnings data="all" /}
+        {call .emailField data="all" /}
+        {call .fullnameField data="all" /}
+        {call .passwordField data="all" /}
+        {call .agreementField data="all" /}
+
+        {call .formBottom}
+            {param buttonText: getText('setup.account.create.account') /}
+            {param content}
+                <span class="jira-setup-account-spinner jira-setup-account-spinner-creating hidden">
+                    <span class="aui-icon aui-icon-wait"></span>{sp}
+                    {getText('setup.account.creating.account')}
+                </span>
+            {/param}
+        {/call}
+    </div>
+{/template}
+
+/**
+ * The template for license generation summary view
+ *
+ * @param email email associated with MAC account
+ * @param fullname fullname of MAC account owner
+ * @param? hasBundleLicenseProblem
+ * @param? hasJiraLicenseProblem
+ * @param? hasLoginProblem
+ * @param? loginProblemText
+ * @param isNewAccount whether new account was registered or used logged in to existing one
+ * @param? selectedBundleName the business name of additional bundle
+ * @param showSummaryWithBundleProblem whether the summary should say about bundle problem
+ * @param productName product name
+ */
+{template .summaryView}
+    <div class="jira-setup-account-summary">
+        {if $hasLoginProblem}
+            {call .loginError}
+                {param errorText: $loginProblemText/}
+            {/call}
+        {elseif $hasJiraLicenseProblem}
+            {call .licenseWarning/}
+        {elseif $hasBundleLicenseProblem}
+            {call .bundleLicenseWarning}
+                {param selectedBundleName: $selectedBundleName /}
+            {/call}
+        {/if}
+
+        {let $isBundleProblem: $hasBundleLicenseProblem or $hasJiraLicenseProblem or $showSummaryWithBundleProblem /}
+
+        <div class="jira-setup-account-summary-list">
+            // account creation / logging in - always successful
+            <p class="jira-setup-account-summary-list-item" data-item="account">
+                <span class="aui-icon aui-icon-small aui-iconfont-approve"></span>
+                {sp}
+                {if $isNewAccount}
+                    {getText('setup.account.summary.new.account')}
+                {else}
+                    {getText('setup.account.summary.existing.account')}
+                {/if}
+            </p>
+            // JIRA License
+            <p class="jira-setup-account-summary-list-item" data-item="jira">
+                {if $hasJiraLicenseProblem}
+                    <span class="aui-icon aui-icon-small aui-iconfont-info"></span>
+                    {sp}
+                    {getText('setup.account.summary.jira.license.unsuccessful')}
+                {else}
+                    <span class="aui-icon aui-icon-small aui-iconfont-approve"></span>
+                    {sp}
+                    {getText('setup.account.summary.jira.license.successful')}
+                {/if}
+            </p>
+            // bundle license
+            {if $selectedBundleName}
+                <p class="jira-setup-account-summary-list-item" data-item="bundle">
+                    {if $isBundleProblem}
+                        <span class="aui-icon aui-icon-small aui-iconfont-info"></span>
+                        {sp}
+                        {getText('setup.account.summary.bundle.license.unsuccessful', $selectedBundleName)}
+                        {sp}
+                        <span class="aui-icon aui-icon-small aui-iconfont-help jira-setup-account-bundle-license-help"
+                        {sp}title="{getText('setup.account.bundle.license.tooltip', $selectedBundleName)}"></span>
+                    {else}
+                        <span class="aui-icon aui-icon-small aui-iconfont-approve"></span>
+                        {sp}
+                        {getText('setup.account.summary.bundle.license.successful', $selectedBundleName)}
+                    {/if}
+                </p>
+            {/if}
+        </div>
+
+        <p class="jira-setup-account-summary-data-header">
+            {if $hasJiraLicenseProblem}
+                {if $isNewAccount}
+                    {getText('setup.account.summary.data.header.new.account')}
+                {else}
+                    {getText('setup.account.summary.data.header.existing.account')}
+                {/if}
+            {else}
+                {if $selectedBundleName}
+                    {if $isBundleProblem}
+                        {getText('setup.account.summary.data.header.jira.license.generated')}
+                    {else}
+                        {getText('setup.account.summary.data.header.product.license.generated', $productName)}
+                    {/if}
+                {else}
+                    {getText('setup.account.summary.data.header.jira.license.generated')}
+                {/if}
+            {/if}
+        </p>
+
+        {call aui.form.fieldGroup}
+            {param content}
+                {call aui.form.label}
+                    {param content: getText('setup.account.form.email') /}
+                    {param isRequired: false /}
+                {/call}
+                {call aui.form.value}
+                    {param content: $email /}
+                {/call}
+            {/param}
+        {/call}
+        {call aui.form.fieldGroup}
+            {param content}
+                {call aui.form.label}
+                    {param content: getText('setup.account.form.fullname') /}
+                    {param isRequired: false /}
+                {/call}
+                {call aui.form.value}
+                    {param content: $fullname /}
+                {/call}
+            {/param}
+        {/call}
+    </div>
+{/template}
+
+/**
+ * A template to encapsulate rendering the license warning messages
+ *
+ * @param? recheckAccountWarning whether show warning regarding checking MAC account existence
+ * @param? recheckAccountWarningError whether error message should be used instead of warning
+ */
+{template .commonWarnings}
+    {if $recheckAccountWarning}
+        {call .cannotRecheckAccountWarning}
+            {param isError: $recheckAccountWarningError /}
+        {/call}
+    {/if}
+{/template}
+
+/**
+ * An AUI message to inform about problems with JIRA license generation caused by login problem.
+ * Always renders an error message.
+ * @param errorText
+ */
+{template .loginError}
+
+    {let $linkEnd}</a>{/let}
+    {let $linkMac}<a href="https://my.atlassian.com/" target="_blank">{/let}
+
+    {call aui.message.error}
+        {param content: $errorText /}
+        {param extraClasses: 'jira-setup-account-summary-message' /}
+        {param titleContent: getText('setup.account.logging.problem.error.title', $linkMac, $linkEnd) /}
+    {/call}
+{/template}
+
+/**
+ * An AUI message to inform about problems with JIRA license generation. Always renders an error message.
+ */
+{template .licenseWarning}
+    {let $linkEnd}</a>{/let}
+    {let $linkMac}<a href="https://my.atlassian.com/" target="_blank">{/let}
+    {let $linkSetup}<a href="{contextPath()}/secure/SetupMode!default.jspa">{/let}
+
+    {call aui.message.error}
+        {param content: getText('setup.account.license.problem.error.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+        {param extraClasses: 'jira-setup-account-summary-message' /}
+        {param titleContent: getText('setup.account.license.problem.error.title') /}
+    {/call}
+{/template}
+
+/**
+ * An AUI message to inform about problems with bundle license generation. Always renders a warning message.
+ *
+ * @param selectedBundleName selected bundle name
+ */
+{template .bundleLicenseWarning}
+    {call aui.message.warning}
+        {param content}
+            <p> {getText('setup.account.bundle.license.problem.content.line1', $selectedBundleName)} </p>
+            <p> {getText('setup.account.bundle.license.problem.content.line2', $selectedBundleName)} </p>
+        {/param}
+        {param extraClasses: 'jira-setup-account-summary-message' /}
+        {param titleContent: getText('setup.account.bundle.license.problem.title', $selectedBundleName) /}
+    {/call}
+{/template}
+
+/**
+ * An AUI message to inform about problems regarding MAC account creation
+ *
+ * @param? isError whether error message should be used
+ */
+{template .cannotCreateAccountWarning}
+    {let $className: 'jira-setup-account-cannot-create-account-message' /}
+    {let $linkEnd}</a>{/let}
+    {let $linkMac}<a href="https://my.atlassian.com/" target="_blank">{/let}
+    {let $linkSetup}<a href="{contextPath()}/secure/SetupMode!default.jspa">{/let}
+
+    {if $isError}
+        {call aui.message.error}
+            {param content: getText('setup.account.create.account.problem.error.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param extraClasses: $className /}
+            {param titleContent: getText('setup.account.create.account.problem.error.title') /}
+        {/call}
+    {else}
+        {call aui.message.warning}
+            {param content: getText('setup.account.create.account.problem.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param extraClasses: $className /}
+            {param titleContent: getText('setup.account.create.account.problem.title') /}
+        {/call}
+    {/if}
+{/template}
+
+/**
+ * An AUI message to inform that checking existence of MAC account failed
+ *
+ * @param? isError whether error message should be used
+ */
+{template .cannotCheckAccountWarning}
+    {let $linkEnd}</a>{/let}
+    {let $linkMac}<a href="https://my.atlassian.com/" target="_blank">{/let}
+    {let $linkSetup}<a href="{contextPath()}/secure/SetupMode!default.jspa">{/let}
+
+    {if $isError}
+        {call aui.message.error}
+            {param content: getText('setup.account.check.account.problem.error.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param titleContent: getText('setup.account.check.account.problem.error.title', $linkMac, $linkEnd) /}
+        {/call}
+    {else}
+        {call aui.message.warning}
+            {param content: getText('setup.account.check.account.problem.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param titleContent: getText('setup.account.check.account.problem.title', $linkMac, $linkEnd) /}
+        {/call}
+    {/if}
+{/template}
+
+/**
+ * An AUI message to inform that checking existence of MAC account failed - used in registration / login forms
+ *
+ * @param? isError whether error message should be used
+ */
+{template .cannotRecheckAccountWarning}
+    {let $className: 'jira-setup-account-cannot-recheck-account-message' /}
+    {let $linkEnd}</a>{/let}
+    {let $linkMac}<a href="https://my.atlassian.com/" target="_blank">{/let}
+    {let $linkSetup}<a href="{contextPath()}/secure/SetupMode!default.jspa">{/let}
+
+    {if $isError}
+        {call aui.message.error}
+            {param content: getText('setup.account.recheck.account.problem.error.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param extraClasses: $className /}
+            {param titleContent: getText('setup.account.recheck.account.problem.error.title', $linkMac, $linkEnd) /}
+        {/call}
+    {else}
+        {call aui.message.warning}
+            {param content: getText('setup.account.recheck.account.problem.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param extraClasses: $className /}
+            {param titleContent: getText('setup.account.recheck.account.problem.title', $linkMac, $linkEnd) /}
+        {/call}
+    {/if}
+{/template}
+
+/**
+ * An AUI message to inform about problems with login (server not responding etc., not invalid credentials case)
+ *
+ * @param? isError whether error message should be used
+ */
+{template .cannotLoginWarning}
+    {let $className: 'jira-setup-account-cannot-login-message' /}
+    {let $linkEnd}</a>{/let}
+    {let $linkMac}<a href="https://my.atlassian.com/" target="_blank">{/let}
+    {let $linkSetup}<a href="{contextPath()}/secure/SetupMode!default.jspa">{/let}
+
+    {if $isError}
+        {call aui.message.error}
+            {param content: getText('setup.account.logging.problem.error.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param extraClasses: $className /}
+            {param titleContent: getText('setup.account.logging.problem.error.title', $linkMac, $linkEnd) /}
+        {/call}
+    {else}
+        {call aui.message.warning}
+            {param content: getText('setup.account.logging.problem.content', $linkMac, $linkEnd, $linkSetup, $linkEnd) /}
+            {param extraClasses: $className /}
+            {param titleContent: getText('setup.account.logging.problem.title', $linkMac, $linkEnd) /}
+        {/call}
+    {/if}
+{/template}
+
+/**
+ * Template for common email field
+ *
+ * @param? errors
+ * @param? values
+ */
+{template .emailField}
+    {let $id: 'jira-setup-account-field-email' /}
+    {let $value: $values and $values.email ? $values.email : '' /}
+
+    <div class="field-group">
+        {call aui.form.label}
+            {param forField : $id /}
+            {param content : getText('setup.account.form.email') /}
+        {/call}
+        {call aui.form.input}
+            {param extraAttributes: [
+                'data-initial-value': $value,
+                'placeholder': getText('setup.account.email.placeholder')
+            ] /}
+            {param extraClasses: 'jira-setup-account-form-field' /}
+            {param id: $id /}
+            {param type: 'text' /}
+            {param value: $value /}
+        {/call}
+        {if $errors and $errors.email}
+            {call aui.form.fieldError}
+                {param message: $errors.email /}
+            {/call}
+        {/if}
+        {call aui.form.fieldDescription}
+            {param extraClasses: 'jira-setup-account-email-description hidden' /}
+            {param content}
+                {call .formSwitchExistingAccount /}
+                {call .formSwitchAfterSubmitExistingAccount /}
+
+                {call .formSwitchNonExistingAccount /}
+                {call .formSwitchAfterSubmitNonExistingAccount /}
+            {/param}
+        {/call}
+    </div>
+{/template}
+
+/**
+ */
+{template .formSwitchExistingAccount}
+    {let $linkExisting}
+        <a href="#" id="jira-setup-account-form-switch-existing" class="jira-setup-account-form-switch">
+    {/let}
+
+    <span class="jira-setup-account-email-existing hidden">
+        {getText('setup.account.recheck.email.existing', $linkExisting, '</a>')|noAutoescape}
+    </span>
+{/template}
+
+/**
+ */
+{template .formSwitchAfterSubmitExistingAccount}
+    {let $linkExistingAfterSubmit}
+        <a href="#" id="jira-setup-account-form-switch-existing-after-submit" class="jira-setup-account-form-switch">
+    {/let}
+
+    <span class="jira-setup-account-email-existing-after-submit hidden">
+        {getText('setup.account.recheck.email.existing.after.submit', $linkExistingAfterSubmit, '</a>')|noAutoescape}
+    </span>
+{/template}
+
+/**
+ */
+{template .formSwitchNonExistingAccount}
+    {let $linkNonExisting}
+        <a href="#" id="jira-setup-account-form-switch-nonexisting" class="jira-setup-account-form-switch">
+    {/let}
+
+    <span class="jira-setup-account-email-not-existing hidden">
+        {getText('setup.account.recheck.email.not.existing', $linkNonExisting, '</a>')|noAutoescape}
+    </span>
+{/template}
+
+/**
+ */
+{template .formSwitchAfterSubmitNonExistingAccount}
+    {let $linkNonExistingAfterSubmit}
+        <a href="#" id="jira-setup-account-form-switch-nonexisting-after-submit" class="jira-setup-account-form-switch">
+    {/let}
+
+    <span class="jira-setup-account-email-not-existing-after-submit hidden">
+        {getText('setup.account.recheck.email.not.existing.after.submit', $linkNonExistingAfterSubmit, '</a>')|noAutoescape}
+    </span>
+{/template}
+
+/**
+ * Template for fullname text field
+ *
+ * @param? errors
+ * @param? values
+ */
+{template .fullnameField}
+    {let $id: 'jira-setup-account-field-fullname' /}
+    {let $value: $values and $values.fullname ? $values.fullname : '' /}
+
+    <div class="field-group">
+        {call aui.form.label}
+            {param forField : $id /}
+            {param content : getText('setup.account.form.fullname') /}
+        {/call}
+        {call aui.form.input}
+            {param extraAttributes: [
+                'placeholder': getText('setup.account.fullname.placeholder')
+            ] /}
+            {param extraClasses: 'jira-setup-account-form-field' /}
+            {param id: $id /}
+            {param type: 'text' /}
+            {param value: $value /}
+        {/call}
+        {if $errors and $errors.fullname}
+            {call aui.form.fieldError}
+                {param message: $errors.fullname /}
+            {/call}
+        {/if}
+    </div>
+{/template}
+
+/**
+ * Template for common password field
+ *
+ * @param? errors
+ * @param? values
+ */
+{template .passwordField}
+    {let $id: 'jira-setup-account-field-password' /}
+    {let $value: $values and $values.password ? $values.password : '' /}
+
+    <div class="field-group">
+        {call aui.form.label}
+            {param forField : $id /}
+            {param content : getText('setup.account.form.password') /}
+        {/call}
+        {call aui.form.input}
+            {param extraAttributes: [
+                'placeholder': getText('setup.account.password.placeholder')
+            ] /}
+            {param extraClasses: 'jira-setup-account-form-field' /}
+            {param id: $id /}
+            {param type: 'password' /}
+            {param value: $value /}
+        {/call}
+        {if $errors and $errors.password}
+            {call aui.form.fieldError}
+                {param message: $errors.password /}
+            {/call}
+        {/if}
+    </div>
+{/template}
+
+/**
+ * Template for common customer agreement checkbox field
+ *
+ * @param? agreementChecked
+ * @param? errors
+ */
+{template .agreementField}
+    {call aui.form.fieldGroup}
+        {param content}
+            <div class="checkbox">
+                {call aui.form.input}
+                    {param extraClasses: 'jira-setup-account-form-field' /}
+                    {param id: 'jira-setup-account-field-agreement' /}
+                    {param isChecked: $agreementChecked /}
+                    {param name: 'agreement' /}
+                    {param type: 'checkbox' /}
+                {/call}
+                {call aui.form.label}
+                    {param content: getText('setup.account.agreement', 'https://www.atlassian.com/legal/customer-agreement') /}
+                    {param forField: 'jira-setup-account-field-agreement' /}
+                    {param isRequired: false /}
+                {/call}
+            </div>
+            {if $errors and $errors.agreement}
+                {call aui.form.fieldError}
+                    {param message: $errors.agreement /}
+                {/call}
+            {/if}
+        {/param}
+    {/call}
+{/template}
+
+/**
+ * Template for buttons and bottom area of a form
+ *
+ * @param buttonText The text to be used by button
+ * @param? content any additional content to be appended after the button
+ */
+{template .formBottom}
+    {call aui.form.fieldGroup}
+        {param content}
+            {call aui.form.button}
+                {param extraClasses: 'aui-button-primary jira-setup-account-form-button' /}
+                {param isDisabled: false /}
+                {param text: $buttonText /}
+            {/call}
+            <span class="jira-setup-account-spinner jira-setup-account-spinner-generating hidden">
+                <span class="aui-icon aui-icon-wait"></span>{sp}
+                {getText('setup.account.generating.license')}
+            </span>
+            <span class="jira-setup-account-spinner jira-setup-account-spinner-checking hidden">
+                <span class="aui-icon aui-icon-wait"></span>{sp}
+                {getText('setup.account.checking.for.account')}
+            </span>
+            {if $content}{$content|noAutoescape}{/if}
+        {/param}
+    {/call}
+{/template}

@@ -3,7 +3,6 @@ package com.googlecode.jsu.transitionssummary.issuetabpanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.tabpanels.GenericMessageAction;
@@ -21,13 +20,13 @@ import com.googlecode.jsu.transitionssummary.TransitionsManager;
  * It will be add a new Issue Tab Panel.
  *
  */
-public class TransitionsSummaryTabPanel implements IssueTabPanel {
+public class TransitionsSummaryTabPanel  implements IssueTabPanel {
 
     protected IssueTabPanelModuleDescriptor descriptor;
 
-    private final TransitionsManager transitionsManager;
-    private final UserManager userManager;
-    private final I18nHelper.BeanFactory beanFactory;
+    public  TransitionsManager transitionsManager;
+    public  UserManager userManager;
+    public  I18nHelper.BeanFactory beanFactory;
     
     public TransitionsSummaryTabPanel(TransitionsManager transitionsManager,
                                       UserManager userManager,
@@ -49,7 +48,7 @@ public class TransitionsSummaryTabPanel implements IssueTabPanel {
      * @see com.googlecode.jsu.issuetabpanel.IssueTabPanel#getActions(org.ofbiz.core.entity.GenericValue, com.opensymphony.user.User)
      */
     public List<com.atlassian.jira.plugin.issuetabpanel.IssueAction> getActions(Issue issue, User remoteUser) {
-    	 List<IssueAction> retList = new ArrayList<IssueAction>();
+    	List<IssueAction> retList = new ArrayList<IssueAction>();
         List<TransitionSummary> transitions = transitionsManager.getTransitionSummary(issue);
        
         // Allway adds only one record to the tab. This is thus, because if there are transition sumeries,
@@ -75,4 +74,5 @@ public class TransitionsSummaryTabPanel implements IssueTabPanel {
         return true;
     }
 
+    
 }

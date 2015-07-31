@@ -1,0 +1,4 @@
+ut\com\example\plugins\tutorial\crud\servlet\IssueCRUDTest.class
+it\com\example\plugins\tutorial\crud\servlet\IssueCRUDFuncTest.class
+it\com\issue\ticket\MyComponentWiredTest.class
+ut\com\issue\ticket\MyComponentUnitTest.class

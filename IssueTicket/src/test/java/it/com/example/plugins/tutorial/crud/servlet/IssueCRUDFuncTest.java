@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
 
+import com.googlecode.jsu.transitionssummary.TransitionsManager;
+
 import java.io.IOException;
 
 import static org.junit.Assert.*;
@@ -20,25 +22,26 @@ public class IssueCRUDFuncTest {
     String baseUrl;
     String servletUrl;
 
-    @Before
+    @Test
     public void setup() {
         httpClient = new DefaultHttpClient();
-        baseUrl = System.getProperty("http://edfx-nomad146:2990");
+        baseUrl = System.getProperty("http://jira6.edifixio-online.com");
         servletUrl = baseUrl + "/plugins/servlet/issuecrud";
     }
 
-    @After
-    public void tearDown() {
-        httpClient.getConnectionManager().shutdown();
-    }
+ 
 
     @Test
     public void testSomething() throws IOException {
         HttpGet httpget = new HttpGet(servletUrl);
 
+         
+         
+        
         // Create a response handler
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
         String responseBody = httpClient.execute(httpget, responseHandler);
         assertTrue(null != responseBody && !"".equals(responseBody));
     }
+   
 }

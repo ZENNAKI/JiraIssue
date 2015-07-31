@@ -1,0 +1,17 @@
+<OSPropertyEntry id="17" entityName="jira.properties" entityId="1" propertyKey="jira.title" type="5"/>
+<OSPropertyString id="17" value="JIRA"/>
+
+<OSPropertyEntry id="18" entityName="jira.properties" entityId="1" propertyKey="jira.mode" type="5"/>
+<OSPropertyString id="18" value="private"/>
+
+<OSPropertyEntry id="19" entityName="jira.properties" entityId="1" propertyKey="License20" type="6"/>
+<OSPropertyText id="19">
+  <value><![CDATA[
+${instant.setup.license}
+]]></value>
+</OSPropertyText>
+
+<!-- serverId -->
+<OSPropertyEntry id="20" entityName="jira.properties" entityId="1" propertyKey="jira.sid.key" type="5"/>
+<OSPropertyString id="20" value="${instant.setup.serverId}"/>
+

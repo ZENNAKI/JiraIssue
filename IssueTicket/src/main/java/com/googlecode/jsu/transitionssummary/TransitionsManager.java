@@ -18,12 +18,12 @@ import java.util.*;
  * This class is in charge to obtain the changes from the Change History, and to summarized them.
  *
  */
-public class TransitionsManager {
+public  class TransitionsManager {
     private static final Logger log = LoggerFactory.getLogger(TransitionsManager.class);
-
-    private final OfBizDelegator ofBizDelegator;
-    private final DateTimeFormatter userFormatter;
-    private final I18nHelper i18nHelper;
+    public int test = 0;
+    public final OfBizDelegator ofBizDelegator;
+    public final DateTimeFormatter userFormatter;
+   public final I18nHelper i18nHelper;
 
     public TransitionsManager(OfBizDelegator ofBizDelegator,
                               DateTimeFormatterFactory dateTimeFormatterFactory,
@@ -33,7 +33,8 @@ public class TransitionsManager {
         this.i18nHelper = i18nHelper;
     }
 
-    /**
+
+	/**
      * @param issue the current issue.
      * @return a List with the Transition Summaries.
      *
@@ -87,8 +88,9 @@ public class TransitionsManager {
      *
      * It obtains all status changes data from the Change History.
      */
-    private List<Transition> getStatusChanges(Issue issue, Timestamp tsCreated){
+    public List<Transition> getStatusChanges(Issue issue, Timestamp tsCreated){
         @SuppressWarnings("unchecked")
+        
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("issue",issue.getId());
         List<GenericValue> changeGroups = ofBizDelegator.findByAnd("ChangeGroup", params);

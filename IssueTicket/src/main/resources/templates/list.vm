@@ -1,7 +1,7 @@
 
 <html>
 <head>
-    <title>All Rapport Issues </title>
+    <title>Repport Issues </title>
     <meta name="decorator" content="atl.general">
     
 </head>
@@ -31,18 +31,18 @@
                         <th>Criticité</th>
                         <th>Type</th>
                         <th>Description</th>
-                        <th>Assignee</th>
-                        <th>Auteur</th>
+                         <th>Auteur</th>
                         <th>Statut</th>
                         <th>Date ouverture</th>   
-                                 
+                      
+                        <th></th>           
                        
                     </tr>
                     </thead>
                     <tbody>
                         #foreach( $issue in $issues )
                         <tr>
-                            <td>$issue.getId()</td>
+                            <td>$issue.getKey()</td>
                             <td>$issue.getPriorityObject().getName()</td>
                            <td> $issue.getIssueTypeObject().getName()</td>
                             <td>
@@ -50,10 +50,7 @@
                             $issue.getDescription()
                         #end
                             </td>
-                            <td>
-                                $issue.getAssignee().getName()
-                            </td>
-                            <td>
+                             <td>
                                 $issue.getReporter().getName()
                             </td>
                             <td>
@@ -62,13 +59,16 @@
                              <td>
                                 $issue.getCreated()
                             </td> 
-                           <!--     #foreach ($tran in $transitions)
-                             #if ($tran.getId() == $issue.getId())
+                            
+                           
+                             
+                               #foreach ($tran in $transitions)
+                            
                              <td>
                                OK
                             </td> 
                             #end
-                            #end-->
+                           
                         </tr>
                         #end
                     </tbody>
@@ -79,7 +79,7 @@
 
     </div>
     
-   <!-- kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk-->
+ 
    
   
     
